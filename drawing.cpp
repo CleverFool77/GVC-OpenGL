@@ -143,7 +143,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
 	glutInitWindowSize(700, 600);
 	glutInitWindowPosition(150, 200);
-	glutCreateWindow("It's a SQAURE");
+	glutCreateWindow("It's a drawing");
 	init();
 	glutDisplayFunc(display);
 	glutMainLoop();
