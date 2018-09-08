@@ -7,38 +7,7 @@ struct Point {
 	GLint y;
 };
 
-void draw_line(Point a, Point b) 
-
-{
-	GLfloat dx = b.x - a.x;
-	GLfloat dy = b.y - a.y;
-
-	GLfloat x1 = a.x;
-	GLfloat y1 = a.y;
-
-	GLfloat steps = 0;
-
-	if(abs(dx) > abs(dy)) 
-	{
-		steps = abs(dx);
-	} 
-
-	else 
-	{
-		steps = abs(dy);
-	}
-
-	GLfloat xInc = dx/steps;
-	GLfloat yInc = dy/steps;
-
-	for(float i = 1.00; i <= steps; i++) {
-		glVertex2f(x1, y1);
-		x1 += xInc;
-		y1 += yInc;
-	}
-}
-
-void draw_ellipse(Point p, GLint rx , GLint ry)
+void draw_ellipse(Point p1, GLint rx , GLint ry)
 {
     GLint rx2 = rx*rx;
     GLint ry2 = ry*ry;
@@ -47,30 +16,65 @@ void draw_ellipse(Point p, GLint rx , GLint ry)
     GLint p,x = 0,y = ry;
     GLint px =0, py = tworx2*y;
 
-    void ellipse_points(GLint, GLint , GLint, GLint);
+    void ellipse_points(Point , GLint, GLint);
 
-    ellipse_points(p.x, p.y, x, y);
+    ellipse_points(p1, x, y);
 
-    p = round(ry2(rx2 - ry)+(2.5*rx2));
-    
+	//region1
+    p = round(ry2 - (rx2 - ry) + (2.5*rx2));
+    while(px < py)
+	{
+		x++;
+		px += twory2;
+			if ( p < 0)
+				p += ry2 + px;
+			else{
+				y--;
+				py -= tworx2;
+				p += ry2 + px - py;
+			}
+			ellipse_points(p1, x, y);
+	}
 
+	//region 2
+	p = round(ry2*(x+0.5)*(x+0.5) + rx2*(y -1)*(y -1) - rx2*ry2);
+	while(y>0)
+	{
+		 y--;
+			py -= tworx2;
+			if( p > 0)
+				p += rx2 - py;
+			else {
+				x++;
+				px += twory2;
+				p += rx2 - py + px;
+			}
+		ellipse_points(p1, x, y);
+	}
 }
+
+void ellipse_points(Point p1, int x, int y)
+{
+		glVertex2f(p1.x + x, p1.y + y);
+		glVertex2f(p1.x - x, p1.y + y);
+		glVertex2f(p1.x + x, p1.y - y);
+		glVertex2f(p1.x - x, p1.y - y);
+}
+
 void init() {  //copied
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glColor3f(1.0, 1.0, 1.0);
 	glPointSize(1.0);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0, 700, 0, 600);
+	gluOrtho2D(-700, 700, -600, 600);
 }
 
 void display(void) {
-	Point p1 = {100, 100};
-	Point p2 = {350,450}; 
-
+	Point p1 = {0, 0};
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBegin(GL_POINTS);
-		draw_line(p1, p2);
+		draw_ellipse(p1, 200,100);
 	glEnd();
 	glFlush();
 }
